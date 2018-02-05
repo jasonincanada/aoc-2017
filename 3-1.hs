@@ -22,8 +22,9 @@ steps :: Int -> Int
 steps n = let i = findRing n
               max = ringMax i
               size = ringMax i - ringMax (i-1)
-              halfrow = size `div` 4 `div` 2
-              cardinals = map (\x -> max - ((size*x) `div` 4) + halfrow) [1..4]
+              row = size `div` 4
+              halfrow = row `div` 2
+              cardinals = [ max - (i*row) + halfrow | i <- [1..4] ]
               distances = [ abs (n-c) | c <- cardinals ]
               closest = minimum distances
           in  i + closest
