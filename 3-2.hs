@@ -45,7 +45,7 @@ next [] = [((0,0), 1)]
 next board = let coords = pos $ length board + 1
                  adjacents = [ add coords a | a <- around ]
                  newsum = sum $ map (\(p, val) -> if p `elem` adjacents then val else 0) board
-             in  board ++ [(position, newsum)]
+             in  board ++ [(coords, newsum)]
 
 -- Get the nth board
 board :: Int -> Board
