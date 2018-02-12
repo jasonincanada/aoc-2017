@@ -7,31 +7,40 @@
 
    Remarks:  This runs out of stack space when compiled normally.
              Compile with -rtsopts, then call with ./5-1 +RTS -K128M
+
+   Updates:  Using Data.Sequence instead of the built-in List reduces run
+             time from 52 sec to 1.7 sec due to Data.Sequence's more
+             efficient element-wise update.  Still seeing the stack issue
+             though
 -}
 
+import Data.Sequence as DS
+
 type Cursor = Int
-type List = ([Int], Cursor)
+type List = (DS.Seq Int, Cursor)
 
 -- Increment the nth number in the list
-incr :: [Int] -> Cursor -> [Int]
-incr xs n = let left = take (n-1) xs
-                right = drop n xs
-            in  left ++ [1 + (xs !! (n-1))] ++ right
+incr :: DS.Seq Int -> Cursor -> DS.Seq Int
+incr xs n = let num = DS.index xs n
+                next = num + 1
+            in  DS.update n next xs
 
-next :: List -> List
-next (nums, index) = let jump = nums !! (index-1)
-                     in  (incr nums index, index + jump)
+next :: DS.Seq Int -> Int -> List
+next nums index = let jump = DS.index nums index
+                  in  (incr nums index, index + jump)
 
-countSteps :: List -> Int
-countSteps list = go list 0
+len :: DS.Seq Int -> Int
+len = DS.length
+
+countSteps :: DS.Seq Int -> Int
+countSteps list = go (list, 0) 0
   where
-    go (list, c) n
-      | c > length list = n 
-      | otherwise       = let nextn = n + 1
-                              nextlist = next (list, c)
-                          in  go nextlist nextn
+    go (list, i) n
+      | i >= len list = n
+      | otherwise     = let nextlist = next list i
+                        in  go nextlist (n+1)
 
 main = do
   file <- readFile "5.input"
-  print $ countSteps $ (map read $ lines file, 1)
+  print $ countSteps $ DS.fromList (map read $ lines file)
 
