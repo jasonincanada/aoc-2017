@@ -6,16 +6,17 @@
    Part 1
 -}
 
+import Data.Char (isDigit)
+
 data Program = Program { name :: String,
-                         weight :: String,
+                         weight :: Int,
                          children :: [String] } deriving (Show)
 
--- Parse a line our internal Program type
+-- Parse a line into our internal Program type
 parse :: String -> Program
 parse s = let ws = words s
-              l = length ws
               name = ws !! 0
-              weight = ws !! 1
+              weight = read $ filter (isDigit) $ ws !! 1
               children = map (filter (/=',')) $ drop 3 ws
           in  Program { name = name, 
                         weight = weight, 
