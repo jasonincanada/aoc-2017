@@ -14,12 +14,12 @@ positions :: Range -> [Int]
 positions r = cycle $ [1..r] ++ [r-1,r-2..2]
 
 process :: [(Depth, Range)] -> [Int]
-process drs = map f drs
+process = map f
   where
-    f (d, r) = let x = (range r) !! d
-               in  if x == 1 
-                   then d * r
-                   else 0
+    f (depth, range) = let pos = (positions range) !! depth
+                       in  if pos == 1
+                           then depth * range
+                           else 0
 
 removecolon :: String -> String
 removecolon = map (\c -> if c == ':' then ' ' else c)
@@ -30,6 +30,6 @@ tuple [d, r] = (d, r)
 main = do
   file <- readFile "13.input"
   let input = lines file
-  let drs = map (tuple . map read . words . removecolon) input
-  print $ sum $ process drs
+  let scanners = map (tuple . map read . words . removecolon) input
+  print $ sum $ process scanners
 
