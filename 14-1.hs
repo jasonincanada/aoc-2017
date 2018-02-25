@@ -9,7 +9,7 @@
 -}
 
 process :: [String] -> Int
-process lines = length $ filter (=='#') $ concat lines
+process = length . filter (=='#') . concat
 
 main = do
   file <- readFile "14-grid.txt"
