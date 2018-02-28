@@ -65,6 +65,9 @@ option p q = Parser $ \s ->
     []  -> parse q s
     res -> res
 
+digit :: Parser Char
+digit = satisfy isDigit
+
 chainl :: Parser a -> Parser (a -> a -> a) -> a -> Parser a
 chainl p op a = (p `chainl1` op) <|> return a
 
