@@ -68,6 +68,21 @@ option p q = Parser $ \s ->
 digit :: Parser Char
 digit = satisfy isDigit
 
+space :: Parser Char
+space = char ' '
+
+string :: String -> Parser String
+string [] = return []
+string (c:cs) = do { char c;
+                     string cs;
+                     return (c:cs) }
+
+number :: Parser Int
+number = do
+  s <- string "-" <|> return []
+  cs <- some digit
+  return $ read (s ++ cs)
+
 chainl :: Parser a -> Parser (a -> a -> a) -> a -> Parser a
 chainl p op a = (p `chainl1` op) <|> return a
 
