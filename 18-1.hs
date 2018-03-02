@@ -145,7 +145,7 @@ instruct cpu op =
                     else advance cpu 1
 
     -- Jump if greater than zero
-    Jump v offs  -> if (getValue cpu v) /= 0
+    Jump v offs  -> if (getValue cpu v) > 0
                     then advance cpu $ getValue cpu offs
                     else advance cpu 1
 
