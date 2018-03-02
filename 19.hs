@@ -40,14 +40,14 @@ right dir = let i  = firstIndex dir directions
 
 -- Determine the next valid step on the path, trying forward, left, right
 next :: Grid -> Position -> Direction -> Maybe (Position, Direction)
-next grid pos dir
-  | try id    = Just (pos +> dir, dir)
-  | try left  = Just (pos +> left dir, left dir)
-  | try right = Just (pos +> right dir, right dir)
-  | otherwise = Nothing
-    where 
-      try k  = isStep $ at grid (pos +> k dir)
-      isStep = (/=' ')
+next grid pos dir = try [id, left, right]
+  where
+    try []            = Nothing
+    try (rotate : rs) = let dir' = rotate dir
+                            pos' = pos +> dir'
+                        in  if at grid pos' /= ' '
+                            then Just (pos', dir')
+                            else try rs
 
 walk :: Grid -> Position -> Direction -> [(Position, Step)]
 walk grid pos dir = go pos dir
