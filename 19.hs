@@ -59,7 +59,7 @@ next grid pos dir
 
 -- Walk the path, collecting the list of positions visited and ASCII characters seen
 walk :: Grid -> Position -> Direction -> ([Position], [Char])
-walk grid p d = go p d [] []
+walk grid p d = go p d [p] []
   where
     go pos dir positions steps =
       case next grid pos dir of
@@ -82,5 +82,5 @@ main = do
   let grid = lines file
   let pathstart = start grid
   let (positions, chars) = walk grid pathstart (0, -1)
-  print $ (length positions + 1, letters chars)
+  print $ (length positions, letters chars)
 
