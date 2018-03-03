@@ -8,6 +8,7 @@
 
 import Prelude hiding (Left, Right)
 import Helpers (firstIndex)
+import Stackoverflow (mmult)
 
 type Grid = [[Char]]
 type Position = (Int, Int)
@@ -23,20 +24,16 @@ start g = let col = firstIndex '|' (g !! 0)
 at :: Grid -> Position -> Step
 at grid (row, col) = (grid !! row) !! col
 
-directions :: [Direction]
-directions = [(1,0), (0,1), (-1,0), (0,-1)]
-
-jump :: Direction -> Int -> Direction
-jump d j = let i = firstIndex d directions
-               i' = (i + j) `mod` 4
-           in  directions !! i'
-
 data Rotation = Left
               | Right
 
 rotate :: Rotation -> Direction -> Direction
-rotate Left  d = jump d  1
-rotate Right d = jump d (-1)
+rotate Left  d = rot   1  d
+rotate Right d = rot (-1) d
+
+rot :: Int -> Direction -> Direction
+rot s (row, col) = let [[row'], [col']] = [[0, -s], [s, 0]] `mmult` [[row], [col]]
+                   in  (row', col')
 
 data Movement = Rotate Rotation
               | Advance

@@ -1,6 +1,8 @@
--- Code I've found on stackoverflow.com
+-- Code I've found on stackoverflow.com and other sites
 
 module Stackoverflow where
+
+import Data.List (transpose)
 
 -- https://stackoverflow.com/questions/16378773/rotate-a-list-in-haskell
 rotate :: Int -> [a] -> [a]
@@ -17,4 +19,8 @@ swap i' j' xs = let (i, j) = if i' < j' then (i', j') else (j', i')
                     middle = take (j - i - 1) (drop (i + 1) xs)
                     right = drop (j + 1) xs
                 in  left ++ [elemJ] ++ middle ++ [elemI] ++ right
+
+-- http://rosettacode.org/wiki/Matrix_multiplication#Haskell
+mmult :: Num a => [[a]] -> [[a]] -> [[a]]
+mmult a b = [ [ sum $ zipWith (*) ar bc | bc <- (transpose b) ] | ar <- a ]
 
