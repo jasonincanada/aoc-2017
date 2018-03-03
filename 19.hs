@@ -6,6 +6,7 @@
    Parts 1/2
 -}
 
+import Prelude hiding (Left, Right)
 import Helpers (firstIndex)
 
 type Grid = [[Char]]
@@ -25,47 +26,61 @@ at grid (row, col) = (grid !! row) !! col
 directions :: [Direction]
 directions = [(1,0), (0,1), (-1,0), (0,-1)]
 
-left :: Direction -> Direction
-left dir = let i  = firstIndex dir directions
-               i' = (i + 1) `mod` 4 
+jump :: Direction -> Int -> Direction
+jump d j = let i = firstIndex d directions
+               i' = (i + j) `mod` 4
            in  directions !! i'
 
-right :: Direction -> Direction
-right dir = let i  = firstIndex dir directions
-                i' = (i - 1) `mod` 4 
-            in  directions !! i'
+data Rotation = Left
+              | Right
+
+rotate :: Rotation -> Direction -> Direction
+rotate Left  d = jump d  1
+rotate Right d = jump d (-1)
+
+data Movement = Rotate Rotation
+              | Advance
+              | Halt
 
 (+>) :: Position -> Direction -> Position
 (+>) (row, col) (dr, dc) = (row+dr, col+dc)
 
--- Determine the next valid step on the path, trying forward, left, right
-next :: Grid -> Position -> Direction -> Maybe (Position, Direction)
-next grid pos dir = try [id, left, right]
-  where
-    try []            = Nothing
-    try (rotate : rs) = let dir' = rotate dir
-                            pos' = pos +> dir'
-                        in  if at grid pos' /= ' '
-                            then Just (pos', dir')
-                            else try rs
+-- Determine the next valid movement on the path, trying forward, left, right
+next :: Grid -> Position -> Direction -> Movement
+next grid pos dir
+  | isStep (id)           = Advance
+  | isStep (rotate Left)  = Rotate Left
+  | isStep (rotate Right) = Rotate Right
+  | otherwise             = Halt
 
-walk :: Grid -> Position -> Direction -> [(Position, Step)]
-walk grid pos dir = go pos dir
   where
-    go p d = 
-      case next grid p d of
-        Just (pos', dir') -> (pos', at grid pos') 
-                             : go pos' dir'
-        Nothing           -> []
+    isStep f = let pos' = pos +> f dir
+               in  at grid pos' /= ' '
+
+-- Walk the path, collecting the list of positions visited and ASCII characters seen
+walk :: Grid -> Position -> Direction -> ([Position], [Char])
+walk grid p d = go p d [] []
+  where
+    go pos dir positions steps =
+      case next grid pos dir of
+
+        Advance      -> let pos'   = dir +> pos
+                            step   = at grid pos'
+                        in  go pos' dir (pos' : positions) (step : steps)
+
+        Rotate Left  -> go pos (rotate Left  dir) positions steps
+        Rotate Right -> go pos (rotate Right dir) positions steps
+
+        Halt         -> (reverse positions, reverse steps)
 
 -- Extract the letters we saw along the way
-letters :: [(Position, Step)] -> [Char]
-letters = filter (flip elem ['A'..'Z']) . map snd
+letters :: [Char] -> [Char]
+letters = filter (flip elem ['A'..'Z'])
 
 main = do
   file <- readFile "19.input"
   let grid = lines file
   let pathstart = start grid
-  let path = walk grid pathstart (0, -1)
-  print $ (letters path, length path + 1)
+  let (positions, chars) = walk grid pathstart (0, -1)
+  print $ (length positions + 1, letters chars)
 
