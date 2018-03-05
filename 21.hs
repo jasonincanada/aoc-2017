@@ -3,7 +3,7 @@
    Day: 21 - Fractal Art
    URL: http://adventofcode.com/2017/day/21
 
-   Part 1
+   Parts 1/2
 -}
 
 import Data.List (transpose, nub, lookup) 
@@ -75,5 +75,6 @@ start = [".#.", "..#", "###"]
 main = do
   file <- readFile "21.input"
   let enhancements = map parse $ lines file
-  print $ count $ last $ take 6 $ iterate (process enhancements) start
+  let iterations = take (18+1) $ iterate (process enhancements) start
+  print $ (count (iterations !! 5), count (iterations !! 18))
 
