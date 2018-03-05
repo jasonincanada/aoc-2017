@@ -13,9 +13,6 @@ type Pattern = [String]
 type Grid = [[Pattern]]
 type Enhancement = (Pattern, Pattern)
 
--- 012    630    01    30
--- 345 -> 741    23 -> 21
--- 678    852
 mirror, rotate :: Pattern -> Pattern
 mirror = map reverse
 rotate = map reverse . transpose
@@ -43,6 +40,7 @@ subdivide :: Int -> Pattern -> Grid
 subdivide n p = let rows = chunksOf n p
                 in  map (transpose . map (chunksOf n)) rows
             
+-- Count the number of hashes in the pattern
 count :: Pattern -> Int
 count = sum . map (length . filter (=='#'))
 
@@ -64,6 +62,7 @@ process es pat = let n    = size pat
                     tries = [ lookup try es | try <- rs ]
                 in  firstJust tries
 
+    -- Extract the first match or throw an exception if none found
     firstJust :: [Maybe Pattern] -> Pattern
     firstJust []     = error "No replacement pattern found"
     firstJust (p:ps) = case p of
