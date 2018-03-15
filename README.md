@@ -3,6 +3,7 @@ My solutions for [Advent of Code 2017](http://adventofcode.com/2017), using Hask
 
 Day | Title | Development Notes
 --- | --- | ---
+22 | [Sporifica Virus](./22-1.hs) | Uses **Data.Map** to track a 2-D grid of evolving states.
 21 | [Fractal Art](./21.hs) | ASCII pattern rotations and flips.  Uses **transpose**.
 20 | [Particle Swarm](./20-1.hs) | Very simple physics. Part 2 incomplete
 19 | [A Series of Tubes](./19.hs) | A fun one, tracing over [a large meandering pipe](./19.input), collecting the characters seen along the way
