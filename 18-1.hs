@@ -54,8 +54,8 @@ value :: Parser Value
 value = register <|> literal
 
 -- Generic parser for a "Cmd Register Value"-formatted instruction
-parse_crv :: String -> (Register -> Value -> Op) -> Parser Op
-parse_crv cmd ctor = do
+parseCrv :: String -> (Register -> Value -> Op) -> Parser Op
+parseCrv cmd ctor = do
   string cmd
   space
   reg <- register
@@ -65,10 +65,10 @@ parse_crv cmd ctor = do
            in  ctor r val
 
 add, modu, mult, set :: Parser Op
-add  = parse_crv "add" Add
-modu = parse_crv "mod" Mod
-mult = parse_crv "mul" Mult
-set  = parse_crv "set" Set
+add  = parseCrv "add" Add
+modu = parseCrv "mod" Mod
+mult = parseCrv "mul" Mult
+set  = parseCrv "set" Set
 
 jump :: Parser Op
 jump = do
@@ -104,7 +104,7 @@ opcode =     add
 getValue :: CPU -> Value -> Int
 getValue cpu val = case val of
   Literal v -> v
-  Reg r     -> (registers cpu) !! (ord r - ord 'a')
+  Reg r     -> registers cpu !! (ord r - ord 'a')
 
 setValue :: CPU -> Register -> Value -> CPU
 setValue cpu r v = let val = getValue cpu v
@@ -115,11 +115,11 @@ setValue cpu r v = let val = getValue cpu v
 
 -- Advance the instruction pointer
 advance :: CPU -> Int -> CPU
-advance cpu n = cpu { ip = (ip cpu) + n }
+advance cpu n = cpu { ip = ip cpu + n }
 
 -- Common code factored out of Add, Mod, Mult
-op_crv :: CPU -> (Int -> Int -> Int) -> Register -> Value -> CPU
-op_crv cpu f reg val = 
+opCrv :: CPU -> (Int -> Int -> Int) -> Register -> Value -> CPU
+opCrv cpu f reg val = 
   let v'  = f (getValue cpu (Reg reg)) (getValue cpu val)
   in  setValue cpu reg (Literal v')
 
@@ -128,9 +128,9 @@ instruct cpu op =
   case op of
 
     -- Basic register operations
-    Add reg val  -> advance (op_crv cpu (+) reg val) 1
-    Mod reg val  -> advance (op_crv cpu mod reg val) 1
-    Mult reg val -> advance (op_crv cpu (*) reg val) 1
+    Add reg val  -> advance (opCrv cpu (+) reg val) 1
+    Mod reg val  -> advance (opCrv cpu mod reg val) 1
+    Mult reg val -> advance (opCrv cpu (*) reg val) 1
 
     -- Play a sound
     Sound val    -> advance (cpu { freq = getValue cpu val }) 1
@@ -140,14 +140,14 @@ instruct cpu op =
 
     -- Recover the last frequency if the register is not 0
     -- Part 1 requires us to halt if the register being set was not 0
-    Recover reg  -> if (getValue cpu (Reg reg)) /= 0
+    Recover reg  -> if getValue cpu (Reg reg) /= 0
                     then halt $ setValue cpu reg (Literal $ freq cpu)
                     else advance cpu 1
 
     -- Jump if greater than zero
-    Jump v offs  -> if (getValue cpu v) > 0
-                    then advance cpu $ getValue cpu offs
-                    else advance cpu 1
+    Jump v offs  -> advance cpu (if getValue cpu v > 0 
+                                 then getValue cpu offs
+                                 else 1)
 
 halt :: CPU -> CPU
 halt cpu = cpu { halted = True }
@@ -158,7 +158,7 @@ runcommands cpu ops
   | halted cpu           = cpu
   | ip cpu < 0           = halt cpu
   | ip cpu >= length ops = halt cpu
-  | otherwise            = let op = ops !! (ip cpu)
+  | otherwise            = let op = ops !! ip cpu
                                cpu' = instruct cpu op
                            in  runcommands cpu' ops
 

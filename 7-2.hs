@@ -22,8 +22,8 @@ data Tree a = Tree a [Tree a] deriving (Show)
 -- Parse a line into our internal Program type
 parse :: String -> Program
 parse s = let ws = words s
-              name = ws !! 0
-              weight = read $ filter (isDigit) $ ws !! 1
+              name = head ws
+              weight = read $ filter isDigit $ ws !! 1
               children = map (filter (/=',')) $ drop 3 ws
           in  Program { name = name, 
                         weight = weight, 
@@ -70,7 +70,7 @@ tc (Tree (_, _, _) c) = c
 oddOneOut :: (Ord b, Eq b) => [a] -> (a -> b) -> Maybe a
 oddOneOut cs f = let grouped = groupBy ((==) `on` f) . sortBy (comparing f)
                      singletons = filter ((==1) . length) (grouped cs)
-                 in  if length singletons == 0
+                 in  if null singletons
                      then Nothing
                      else Just $ head (head singletons)
 

@@ -20,10 +20,10 @@ rev s i n = let rot = rotate i s
             in  rotate (len-i) new
 
 process :: [a] -> [Int] -> ([a], Int, Int)
-process a lengths = foldl f (a, 0, 0) lengths
+process a = foldl f (a, 0, 0)
   where
     f (list, i, skip) len = (rev list i len,
-                             (i + skip + len) `mod` (length list),
+                             (i + skip + len) `mod` length list,
                              skip + 1)
 
 removecomma :: String -> String

@@ -8,6 +8,7 @@
 
 import Data.List (transpose, nub, lookup) 
 import Data.List.Split (splitOn, chunksOf)
+import Data.Maybe (fromMaybe)
 
 type Pattern = [String]
 type Grid = [[Pattern]]
@@ -31,7 +32,7 @@ parse s = (splitOn "/" left, splitOn "/" right)
 
 -- Join a grid of patterns into one pattern
 join :: Grid -> Pattern
-join = concat . map (foldr f empty)
+join = concatMap (foldr f empty)
   where f     = zipWith (++)
         empty = cycle [[]]
 
@@ -46,7 +47,7 @@ count = sum . map (length . filter (=='#'))
 
 -- Get the side length of a pattern
 size :: Pattern -> Int
-size n = length (n !! 0)
+size n = length $ head n
 
 process :: [Enhancement] -> Pattern -> Pattern
 process es pat = let n    = size pat
@@ -65,9 +66,7 @@ process es pat = let n    = size pat
     -- Extract the first match or throw an exception if none found
     firstJust :: [Maybe Pattern] -> Pattern
     firstJust []     = error "No replacement pattern found"
-    firstJust (p:ps) = case p of
-                         Just pat -> pat
-                         Nothing -> firstJust ps
+    firstJust (p:ps) = fromMaybe (firstJust ps) p
 
 start :: Pattern
 start = [".#.", "..#", "###"]
@@ -76,5 +75,5 @@ main = do
   file <- readFile "21.input"
   let enhancements = map parse $ lines file
   let iterations = take (18+1) $ iterate (process enhancements) start
-  print $ (count (iterations !! 5), count (iterations !! 18))
+  print (count (iterations !! 5), count (iterations !! 18))
 

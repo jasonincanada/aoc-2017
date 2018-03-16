@@ -38,6 +38,6 @@ parse s = let nums = map read . words $ map digits s
 
 main = do
   file <- readFile "20.input"
-  let particles = zipWith (,) [0..] $ map parse $ lines file
+  let particles = zip [0..] $ map parse $ lines file
   print $ closest particles
 

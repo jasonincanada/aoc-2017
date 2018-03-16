@@ -17,7 +17,7 @@ type Step = Char
 
 -- Find the first pipe in the first row
 start :: Grid -> Position
-start g = let col = firstIndex '|' (g !! 0)
+start g = let col = firstIndex '|' (head g)
           in  (0, col)
 
 -- Get the character at a position in the grid
@@ -72,12 +72,12 @@ walk grid p d = go p d [p] []
 
 -- Extract the letters we saw along the way
 letters :: [Char] -> [Char]
-letters = filter (flip elem ['A'..'Z'])
+letters = filter (`elem` ['A'..'Z'])
 
 main = do
   file <- readFile "19.input"
   let grid = lines file
   let pathstart = start grid
   let (positions, chars) = walk grid pathstart (0, -1)
-  print $ (length positions, letters chars)
+  print (length positions, letters chars)
 

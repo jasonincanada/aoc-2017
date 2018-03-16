@@ -8,7 +8,7 @@
 
 type Register = (String, Int)
 type CPU = [Register]
-type Line = (String, Int, String, (Int -> Bool))
+type Line = (String, Int, String, Int -> Bool)
 
 add :: CPU -> String -> Int -> CPU
 add [] name val = [(name, val)]
@@ -22,7 +22,7 @@ test ((n,v):rs) name f
   | n == name = f v
   | otherwise = test rs name f
 
-predicate :: String -> Int -> (Int -> Bool)
+predicate :: String -> Int -> Int -> Bool
 predicate s v
   | s == "==" = (==) v
   | s == "!=" = (/=) v
@@ -33,7 +33,7 @@ predicate s v
 
 parse :: String -> Line
 parse s = let ws = words s
-              reg = ws !! 0
+              reg = head ws
               mult = if ws !! 1 == "inc" then 1 else -1
               val = read $ ws !! 2
               testreg = ws !! 4
@@ -58,5 +58,5 @@ process lines = let commands = map parse $ reverse lines
 main = do
   file <- readFile "8.input"
   let input = lines file
-  print $ process $ input
+  print $ process input
   

@@ -29,6 +29,5 @@ steps n = let i = findRing n
               closest = minimum distances
           in  i + closest
 
-main = do
-  print $ steps 368078
+main = print $ steps 368078
 

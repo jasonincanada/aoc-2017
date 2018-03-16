@@ -24,6 +24,6 @@ process s = sum $ zipWith reduce (stream1 s) (stream2 s)
 
 main = do
   file <- readFile "1.input"
-  let input = (lines file) !! 0
+  let input = head $ lines file
   print $ process input
   

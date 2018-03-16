@@ -58,7 +58,7 @@ move = do
   return [m]
 
 comma :: Parser ([a] -> [a] -> [a])
-comma = char ',' >> return (\a b -> a ++ b)
+comma = char ',' >> return (++)
 
 moves :: Parser [Move]
 moves = chainl move comma []
@@ -79,6 +79,6 @@ process = foldl perform
 main = do
   file <- readFile "16.input"
   let input = lines file
-  let parsed = run moves (input !! 0)
+  let parsed = run moves (head input)
   print $ process ['a'..'p'] parsed
 

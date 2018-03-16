@@ -15,8 +15,8 @@ data Program = Program { name :: String,
 -- Parse a line into our internal Program type
 parse :: String -> Program
 parse s = let ws = words s
-              name = ws !! 0
-              weight = read $ filter (isDigit) $ ws !! 1
+              name = head ws
+              weight = read $ filter isDigit $ ws !! 1
               children = map (filter (/=',')) $ drop 3 ws
           in  Program { name = name, 
                         weight = weight, 
@@ -42,5 +42,5 @@ main = do
   file <- readFile "7.input"
   let input = lines file
   let programs = map parse input
-  print $ process $ programs
+  print $ process programs
   

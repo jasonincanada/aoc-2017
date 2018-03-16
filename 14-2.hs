@@ -29,7 +29,7 @@ cells :: Int -> [String] -> Grid
 cells len = map fst . filter ((=='#') . snd) . index . concat
   where
     index :: String -> [((Int, Int), Char)]
-    index line = zipWith3 f rows cols line
+    index = zipWith3 f rows cols
     f row col x = ((row, col), x)
     rows = concat [ replicate len r | r <- [0..] ]
     cols = cycle [0..len-1]
@@ -44,7 +44,7 @@ region p grid = go [] [p]
                      in  go found' queue' 
 
 partition :: Grid -> [[Position]]
-partition grid = go [] grid
+partition = go []
   where
     go regions []   = regions
     go regions grid = let next = head grid

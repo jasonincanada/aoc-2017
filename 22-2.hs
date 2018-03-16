@@ -9,6 +9,7 @@
 import qualified Data.Map as Map
 import Prelude hiding (Left, Right)
 import Data.List (elemIndices)
+import Data.Maybe (fromMaybe)
 import System.Environment (getArgs)
 import Stackoverflow (mmult)
 
@@ -54,9 +55,7 @@ advance c grid = case Map.lookup c grid of
   Just status  -> Map.insert c (evolve status) grid
 
 get :: Position -> Grid -> Status
-get c grid = case Map.lookup c grid of
-  Nothing     -> Clean
-  Just status -> status
+get c grid = fromMaybe Clean (Map.lookup c grid)
 
 next :: (Grid, Position, Direction, Int, Int) -> (Grid, Position, Direction, Int, Int)
 next (grid, cursor, dir, infects, n) =

@@ -85,6 +85,5 @@ process list = go list 1 [list]
                          then (n, n - firstIndex nextlist (reverse seen) + 1)
                          else go nextlist (n+1) (list : seen)
 
-main = do
-  print $ process input
+main = print $ process input
 

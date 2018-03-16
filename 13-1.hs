@@ -16,7 +16,7 @@ positions r = cycle $ [1..r] ++ [r-1,r-2..2]
 process :: [(Depth, Range)] -> [Int]
 process = map f
   where
-    f (depth, range) = let pos = (positions range) !! depth
+    f (depth, range) = let pos = positions range !! depth
                        in  if pos == 1
                            then depth * range
                            else 0

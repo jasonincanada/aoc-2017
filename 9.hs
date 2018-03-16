@@ -30,7 +30,7 @@ garbage = do
   return $ Garbage $ concat junks
 
 comma :: Parser ([Thing] -> [Thing] -> [Thing])
-comma = char ',' >> return (\a b -> a ++ b)
+comma = char ',' >> return (++)
 
 thing :: Parser [Thing]
 thing = do
@@ -38,7 +38,7 @@ thing = do
   return [s]
 
 things :: Parser [Thing]
-things = chainl thing comma ([])
+things = chainl thing comma []
 
 group :: Parser Thing
 group = do
@@ -57,7 +57,7 @@ measure (Group ts) = sum $ map measure ts
 
 main = do
   file <- readFile "9.input"
-  let input = (lines file) !! 0
+  let input = head $ lines file
   let parsed = run group input
-  print $ (count 1 parsed, measure parsed)
+  print (count 1 parsed, measure parsed)
   
